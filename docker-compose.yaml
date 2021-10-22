@@ -1,0 +1,87 @@
+version: '3.1'
+
+services:
+
+  drupal:
+    image: drupal:9-php7.4-apache
+    container_name: drupal
+    expose:
+      - "80"
+    restart: unless-stopped
+    volumes:  
+      - ./d_modules:/var/www/html/modules \
+      - ./d_profiles:/var/www/html/profiles \
+      - ./d_sites:/var/www/html/sites \
+      - ./d_themes:/var/www/html/themes \
+    depends_on:
+      - drupaldb
+    environment:
+      HOST: drupaldb
+      DBASE: drupal
+      USER: user
+      PASS: p4ssw0rd 
+      VIRTUAL_HOST: pruebas.labarta.xyz        #debe ser un dominio válido y DNS apuntando a este servidor
+      LETSENCRYPT_HOST: pruebas.labarta.xyz    #debe ser un dominio válido y DNS apuntando a este servidor   
+      
+  drupaldb:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password 
+    container_name: drupaldb 
+    expose:
+      - "3306"
+    restart: unless-stopped
+    volumes:
+      - ./db_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: drupal
+      MYSQL_USER: user
+      MYSQL_PASSWORD: p4ssw0rd
+      MYSQL_ROOT_PASSWORD: p4ssw0rd    
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: drupalpma 
+    restart: unless-stopped
+    environment:
+      PMA_HOST: drupaldb
+      PMA_USER: user
+      PMA_PASSWORD: p4ssw0rd
+    ports:
+      - "8080:80"
+    depends_on:
+      - drupaldb   
+      
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - certs:/etc/nginx/certs
+      - vhost.d:/etc/nginx/vhost.d
+      - ./html:/usr/share/nginx/html
+      
+  nginx-proxy-letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: nginx-proxy-letsencrypt
+    restart: always
+    depends_on:
+      - nginx-proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - certs:/etc/nginx/certs
+      - vhost.d:/etc/nginx/vhost.d
+      - ./html:/usr/share/nginx/html
+    environment:
+      - DEFAULT_EMAIL=admin@labarta.xyz     #debe ser un email válido
+      - NGINX_PROXY_CONTAINER=nginx-proxy
+
+volumes:
+  certs: {}
+  vhost.d: {}   
+      
+
+
