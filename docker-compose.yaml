@@ -20,8 +20,8 @@ services:
       DBASE: drupal
       USER: user
       PASS: p4ssw0rd 
-      VIRTUAL_HOST: pruebas.labarta.xyz        #debe ser un dominio válido y DNS apuntando a este servidor
-      LETSENCRYPT_HOST: pruebas.labarta.xyz    #debe ser un dominio válido y DNS apuntando a este servidor   
+      VIRTUAL_HOST: tudominio.com        #debe ser un dominio válido y DNS apuntando a este servidor
+      LETSENCRYPT_HOST: tudominio.com    #debe ser un dominio válido y DNS apuntando a este servidor   
       
   drupaldb:
     image: mysql:8.0
@@ -76,7 +76,7 @@ services:
       - vhost.d:/etc/nginx/vhost.d
       - ./html:/usr/share/nginx/html
     environment:
-      - DEFAULT_EMAIL=admin@labarta.xyz     #debe ser un email válido
+      - DEFAULT_EMAIL=admin@gmail.com     #debe ser un email válido
       - NGINX_PROXY_CONTAINER=nginx-proxy
 
 volumes:
