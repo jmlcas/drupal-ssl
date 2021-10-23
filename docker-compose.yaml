@@ -15,6 +15,7 @@ services:
       - ./d_themes:/var/www/html/themes \
     depends_on:
       - drupaldb
+      - nginx-proxy
     environment:
       HOST: drupaldb
       DBASE: drupal
