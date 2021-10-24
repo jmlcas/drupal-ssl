@@ -1,5 +1,5 @@
 # drupal-ssl
-Drupal - Mysql - phpMyAdmin - ssl - CMS - Docker-compose
+Drupal + MySQL + phpMyAdmin + Nginx + SSL - CMS - Docker-compose
 
 Ver en "localhost"
 
